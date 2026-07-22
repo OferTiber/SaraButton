@@ -95,6 +95,36 @@ The debug APK uses Android's standard local debug key. Distributable builds
 should use a private release signing key that is never committed to the
 repository.
 
+## Download a release APK
+
+Versioned, release-signed APKs are available from
+[GitHub Releases](https://github.com/OferTiber/SaraButton/releases). Download
+the APK and its adjacent `.sha256` file, then verify the download before
+installing it:
+
+```bash
+sha256sum --check SaraButton-2.3.0.apk.sha256
+```
+
+On macOS, use `shasum -a 256 SaraButton-2.3.0.apk` and compare the result with
+the checksum file. Build provenance can also be verified with GitHub CLI:
+
+```bash
+gh attestation verify SaraButton-2.3.0.apk --repo OferTiber/SaraButton
+```
+
+Android may ask the user to allow the browser or file manager to install
+unknown apps. Disable that permission again after installation if it is not
+otherwise needed. Future updates must be signed with the same Sara Button
+release key; Android will reject an APK signed by a different key.
+
+GitHub Actions creates a release only for a version tag such as `v2.3.0`. The
+tag must match `versionName` in `app/build.gradle`. The workflow tests and lints
+the project, builds and verifies the signed APK, generates its checksum and
+provenance attestation, and attaches the distributable files to the GitHub
+Release. Release signing uses encrypted repository secrets; key files and
+passwords must never be added to the repository.
+
 ## Configure the app
 
 1. Install and open Sara Button.
