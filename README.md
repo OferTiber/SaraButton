@@ -138,6 +138,12 @@ Keep an offline backup of the keystore and its credentials. Key files and
 passwords must never be added to the repository. Losing the key prevents
 Android from accepting future updates to existing installations.
 
+The `main` branch is protected, including for repository administrators. Make
+each change on a short-lived branch and open a pull request. GitHub requires the
+Android CI `build` check to pass before merging but does not require a human
+approval. Force pushes and deletion of `main` are blocked, and GitHub deletes
+the temporary branch automatically after its pull request is merged.
+
 For each new version, increment both `versionCode` and `versionName` in
 `app/build.gradle`, merge the change to `main`, and push a semantic version tag
 such as `v2.3.0`. The tag version must match `versionName`. GitHub Actions then
