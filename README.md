@@ -76,7 +76,7 @@ Requirements:
 Run the same checks used by GitHub Actions:
 
 ```bash
-./gradlew testDebugUnitTest lintDebug assembleDebug
+./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
 ```
 
 The debug APK is written to:
@@ -118,12 +118,41 @@ unknown apps. Disable that permission again after installation if it is not
 otherwise needed. Future updates must be signed with the same Sara Button
 release key; Android will reject an APK signed by a different key.
 
-GitHub Actions creates a release only for a version tag such as `v2.3.0`. The
-tag must match `versionName` in `app/build.gradle`. The workflow tests and lints
-the project, builds and verifies the signed APK, generates its checksum and
-provenance attestation, and attaches the distributable files to the GitHub
-Release. Release signing uses encrypted repository secrets; key files and
-passwords must never be added to the repository.
+The official release certificate has this SHA-256 fingerprint:
+
+```text
+E8:F7:F5:07:B8:94:39:00:CF:F6:77:80:E3:BB:A8:72:BA:E0:E3:86:D1:6D:BB:26:31:D4:A8:D9:36:27:D4:12
+```
+
+## Maintainer release process
+
+Release signing requires these encrypted GitHub Actions repository secrets:
+
+- `SARA_BUTTON_KEYSTORE_BASE64` — the complete release keystore encoded as
+  single-line Base64.
+- `SARA_BUTTON_KEYSTORE_PASSWORD` — the keystore password.
+- `SARA_BUTTON_KEY_ALIAS` — the release-key alias.
+- `SARA_BUTTON_KEY_PASSWORD` — the private-key password.
+
+Keep an offline backup of the keystore and its credentials. Key files and
+passwords must never be added to the repository. Losing the key prevents
+Android from accepting future updates to existing installations.
+
+For each new version, increment both `versionCode` and `versionName` in
+`app/build.gradle`, merge the change to `main`, and push a semantic version tag
+such as `v2.3.0`. The tag version must match `versionName`. GitHub Actions then
+tests and lints the project, builds and verifies the signed APK, generates its
+checksum and provenance attestation, and attaches both distributable files to
+the GitHub Release.
+
+To retry publication for an existing tag without moving it, run:
+
+```bash
+gh workflow run release.yml --repo OferTiber/SaraButton --ref main -f tag=v2.3.0
+```
+
+The retry uses the current workflow definition from `main` but checks out and
+builds the specified tag.
 
 ## Configure the app
 
@@ -185,7 +214,8 @@ and any changes to logging or permissions.
 Unit tests cover all three supported BTHome device IDs, model-name
 classification, four-button and one-button packet shapes, event ordering,
 encryption, truncation, and current and legacy hold values. CI builds the debug
-APK and runs unit tests and Android lint.
+APK and runs unit tests and Android lint. The release workflow repeats those
+checks before building, verifying, attesting, and publishing the signed APK.
 
 BLE delivery, battery policy, dialer behavior, speakerphone handling, and
 background process limits vary across Android implementations. Always perform
