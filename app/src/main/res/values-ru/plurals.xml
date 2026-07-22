@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="one">Поиск — обнаружено %1$d устройство Bluetooth поблизости. Один раз нажмите кнопку панели.</item>
+        <item quantity="few">Поиск — обнаружено %1$d устройства Bluetooth поблизости. Один раз нажмите кнопку панели.</item>
+        <item quantity="many">Поиск — обнаружено %1$d устройств Bluetooth поблизости. Один раз нажмите кнопку панели.</item>
+        <item quantity="other">Поиск — обнаружено %1$d устройства Bluetooth поблизости. Один раз нажмите кнопку панели.</item>
+    </plurals>
+</resources>

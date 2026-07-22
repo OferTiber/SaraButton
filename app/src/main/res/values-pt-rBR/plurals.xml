@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="one">Procurando — %1$d dispositivo Bluetooth próximo detectado. Pressione uma vez um botão do painel.</item>
+        <item quantity="many">Procurando — %1$d dispositivos Bluetooth próximos detectados. Pressione uma vez um botão do painel.</item>
+        <item quantity="other">Procurando — %1$d dispositivos Bluetooth próximos detectados. Pressione uma vez um botão do painel.</item>
+    </plurals>
+</resources>

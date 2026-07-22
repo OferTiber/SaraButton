@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="zero">جارٍ البحث — لم يتم اكتشاف أجهزة Bluetooth قريبة. اضغط مرة واحدة على زر في اللوحة.</item>
+        <item quantity="one">جارٍ البحث — تم اكتشاف جهاز Bluetooth واحد قريب. اضغط مرة واحدة على زر في اللوحة.</item>
+        <item quantity="two">جارٍ البحث — تم اكتشاف جهازي Bluetooth قريبين. اضغط مرة واحدة على زر في اللوحة.</item>
+        <item quantity="few">جارٍ البحث — تم اكتشاف %1$d أجهزة Bluetooth قريبة. اضغط مرة واحدة على زر في اللوحة.</item>
+        <item quantity="many">جارٍ البحث — تم اكتشاف %1$d جهاز Bluetooth قريب. اضغط مرة واحدة على زر في اللوحة.</item>
+        <item quantity="other">جارٍ البحث — تم اكتشاف %1$d جهاز Bluetooth قريب. اضغط مرة واحدة على زر في اللوحة.</item>
+    </plurals>
+</resources>

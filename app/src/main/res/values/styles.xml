@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SaraButton" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/surface</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:colorAccent">@color/green</item>
+        <item name="android:windowBackground">@color/surface</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="SectionTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textColor">@color/navy</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="PhoneLabel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textColor">@color/navy</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="PhoneField">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:inputType">phone</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="PrimaryButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:backgroundTint">@color/green</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SecondaryButton" parent="PrimaryButton">
+        <item name="android:backgroundTint">@color/navy</item>
+    </style>
+
+    <style name="DangerButton" parent="PrimaryButton">
+        <item name="android:backgroundTint">@color/red</item>
+    </style>
+</resources>

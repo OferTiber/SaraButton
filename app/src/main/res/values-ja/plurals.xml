@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="other">検索中 — 付近のBluetoothデバイスを%1$d台検出しました。パネルのボタンを1回押してください。</item>
+    </plurals>
+</resources>

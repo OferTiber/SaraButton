@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="one">Searching — 1 nearby Bluetooth device detected. Press a panel button once.</item>
+        <item quantity="other">Searching — %1$d nearby Bluetooth devices detected. Press a panel button once.</item>
+    </plurals>
+</resources>

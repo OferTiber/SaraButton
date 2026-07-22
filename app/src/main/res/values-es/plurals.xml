@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="one">Buscando — se detectó 1 dispositivo Bluetooth cercano. Pulsa una vez un botón del panel.</item>
+        <item quantity="many">Buscando — se detectaron %1$d dispositivos Bluetooth cercanos. Pulsa una vez un botón del panel.</item>
+        <item quantity="other">Buscando — se detectaron %1$d dispositivos Bluetooth cercanos. Pulsa una vez un botón del panel.</item>
+    </plurals>
+</resources>

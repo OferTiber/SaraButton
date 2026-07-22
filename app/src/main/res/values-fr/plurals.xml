@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="one">Recherche — %1$d appareil Bluetooth à proximité détecté. Appuyez une fois sur un bouton du panneau.</item>
+        <item quantity="many">Recherche — %1$d appareils Bluetooth à proximité détectés. Appuyez une fois sur un bouton du panneau.</item>
+        <item quantity="other">Recherche — %1$d appareils Bluetooth à proximité détectés. Appuyez une fois sur un bouton du panneau.</item>
+    </plurals>
+</resources>

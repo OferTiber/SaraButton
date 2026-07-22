@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="remote_buttons">
+        <item>@string/button_1</item>
+        <item>@string/button_2</item>
+        <item>@string/button_3</item>
+        <item>@string/button_4</item>
+    </string-array>
+    <string-array name="press_types">
+        <item>@string/press_single</item>
+        <item>@string/press_double</item>
+        <item>@string/press_long</item>
+    </string-array>
+</resources>

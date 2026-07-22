@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="one">Suche — 1 Bluetooth-Gerät in der Nähe erkannt. Drücke einmal eine Taste am Bedienfeld.</item>
+        <item quantity="other">Suche — %1$d Bluetooth-Geräte in der Nähe erkannt. Drücke einmal eine Taste am Bedienfeld.</item>
+    </plurals>
+</resources>

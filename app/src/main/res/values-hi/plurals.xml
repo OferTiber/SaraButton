@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="one">खोज जारी — पास में %1$d Bluetooth डिवाइस मिला। पैनल का बटन एक बार दबाएँ।</item>
+        <item quantity="other">खोज जारी — पास में %1$d Bluetooth डिवाइस मिले। पैनल का बटन एक बार दबाएँ।</item>
+    </plurals>
+</resources>

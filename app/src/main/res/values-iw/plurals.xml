@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scanning_count">
+        <item quantity="one">מחפש — זוהה מכשיר Bluetooth אחד בסביבה. יש ללחוץ פעם אחת על כפתור בפאנל.</item>
+        <item quantity="two">מחפש — זוהו שני מכשירי Bluetooth בסביבה. יש ללחוץ פעם אחת על כפתור בפאנל.</item>
+        <item quantity="other">מחפש — זוהו %1$d מכשירי Bluetooth בסביבה. יש ללחוץ פעם אחת על כפתור בפאנל.</item>
+    </plurals>
+</resources>
