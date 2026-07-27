@@ -20,6 +20,12 @@ manufacturer, mobile carrier, or contact.
 The app reads unencrypted BTHome v2 advertisements directly. A Shelly gateway,
 Bluetooth pairing, Shelly account, and Shelly Smart Control are not required.
 
+Sara Button monitors one selected remote per phone. Multiple supported remotes
+can be present in the same home, but the app ignores advertisements from every
+remote except the selected Bluetooth address. Discovering a different remote
+replaces the current selection; simultaneous multi-remote monitoring is not
+supported.
+
 ## Android compatibility
 
 The app supports Android 6.0 (API 23) and newer. A compatible device needs:
