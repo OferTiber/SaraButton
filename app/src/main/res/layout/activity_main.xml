@@ -113,6 +113,11 @@
 
         <TextView
             style="@style/PhoneLabel"
+            android:text="@string/panel_phone_heading"
+            android:textStyle="bold" />
+
+        <TextView
+            style="@style/PhoneLabel"
             android:text="@string/button_1_phone" />
 
         <EditText
@@ -169,6 +174,18 @@
         </LinearLayout>
 
         <TextView
+            style="@style/PhoneLabel"
+            android:layout_marginTop="16dp"
+            android:text="@string/tough_phone"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/toughPhoneField"
+            style="@style/PhoneField"
+            android:autofillHints="phone"
+            android:hint="@string/optional_phone_hint" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
@@ -181,10 +198,29 @@
             android:text="@string/remote_heading" />
 
         <TextView
+            style="@style/PhoneLabel"
+            android:text="@string/panel_remote_label"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/remoteText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/remote_not_selected"
+            android:text="@string/remote_slot_not_selected"
+            android:textColor="@color/ink"
+            android:textSize="17sp" />
+
+        <TextView
+            style="@style/PhoneLabel"
+            android:layout_marginTop="14dp"
+            android:text="@string/tough_remote_label"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/toughRemoteText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/remote_slot_not_selected"
             android:textColor="@color/ink"
             android:textSize="17sp" />
 

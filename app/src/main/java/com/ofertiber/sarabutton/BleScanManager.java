@@ -12,12 +12,16 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.ParcelUuid;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 final class BleScanManager {
     static final String ACTION_SCAN_RESULT = "com.ofertiber.sarabutton.action.BLE_SCAN_RESULT";
@@ -137,14 +141,24 @@ final class BleScanManager {
     }
 
     static List<ScanFilter> persistentFilters(Context context) {
-        String address = AppPreferences.get(context)
-                .getString(AppPreferences.KEY_REMOTE_ADDRESS, "");
-        if (address != null && BluetoothAdapter.checkBluetoothAddress(address)) {
-            // The original RC Button 4 uses a public, stable BLE address. Filtering
-            // on it avoids vendor-specific differences in how service data is exposed.
-            return Collections.singletonList(
-                    new ScanFilter.Builder().setDeviceAddress(address).build()
-            );
+        SharedPreferences preferences = AppPreferences.get(context);
+        List<ScanFilter> filters = new ArrayList<>(2);
+        Set<String> addresses = new HashSet<>();
+        int[] remoteTypes = {
+                ShellyButtonDevice.BUTTON_COUNT_RC_4,
+                ShellyButtonDevice.BUTTON_COUNT_TOUGH_1
+        };
+        for (int remoteType : remoteTypes) {
+            String address = AppPreferences.getRemoteAddress(preferences, remoteType);
+            if (BluetoothAdapter.checkBluetoothAddress(address)
+                    && addresses.add(address.toUpperCase(java.util.Locale.ROOT))) {
+                // Address filters handle vendor differences in how BTHome service
+                // data is exposed and let both configured remotes wake the app.
+                filters.add(new ScanFilter.Builder().setDeviceAddress(address).build());
+            }
+        }
+        if (!filters.isEmpty()) {
+            return filters;
         }
         return Collections.singletonList(
                 new ScanFilter.Builder().setServiceData(BTHOME_UUID, new byte[0]).build()

@@ -20,11 +20,11 @@ manufacturer, mobile carrier, or contact.
 The app reads unencrypted BTHome v2 advertisements directly. A Shelly gateway,
 Bluetooth pairing, Shelly account, and Shelly Smart Control are not required.
 
-Sara Button monitors one selected remote per phone. Multiple supported remotes
-can be present in the same home, but the app ignores advertisements from every
-remote except the selected Bluetooth address. Discovering a different remote
-replaces the current selection; simultaneous multi-remote monitoring is not
-supported.
+Sara Button can monitor one four-button panel and one Tough 1 ZB simultaneously
+on the same phone. Each remote type has its own saved Bluetooth address and
+phone-number assignments. Advertisements from other Bluetooth addresses are
+ignored. The app supports one remote in each slot; it does not monitor two
+four-button panels or two Tough buttons at the same time.
 
 ## Android compatibility
 
@@ -59,7 +59,9 @@ battery use in their device settings.
 
 ## Features
 
-- One or four phone-number assignments based on the selected remote.
+- Four phone-number assignments for the panel plus a separate Tough 1 ZB
+  assignment.
+- Simultaneous monitoring of one four-button panel and one Tough 1 ZB.
 - Optional routing of all four-button remote buttons to the first number.
 - Single, double, or long press as the configured trigger type.
 - Packet-level duplicate suppression and a 20-second call safety guard.
@@ -176,10 +178,11 @@ builds the specified tag.
 3. Allow unrestricted background activity and disable the platform's unused-app
    suspension for Sara Button.
 4. Enter at least one phone number, including the international country code
-   where possible. On a four-button remote, blank assignments disable those
-   buttons. Tough 1 ZB uses only the Button 1 number.
-5. With the remote near the Android device, press a button once. Discovery
-   starts automatically when no remote is configured.
+   where possible. The panel has four assignments and Tough 1 ZB has a separate
+   assignment. Blank assignments disable those buttons.
+5. With each remote near the Android device, press a button once. Discovery
+   starts automatically for either missing remote type. You can configure just
+   one remote or add one panel and one Tough button for simultaneous monitoring.
 6. Choose the press type and start monitoring. Keep the ongoing monitoring
    notification enabled.
 7. Lock the screen and test every configured button. Confirm that the intended
@@ -208,7 +211,7 @@ Button afterward; discovery starts automatically.
 ## Privacy and security
 
 - The manifest does not request Internet access.
-- Phone numbers, the selected remote address, and settings are stored only in
+- Phone numbers, the selected remote addresses, and settings are stored only in
   app-private device-protected preferences so monitoring can work during Direct
   Boot.
 - Android backup and device-transfer extraction are disabled for app data.
@@ -224,10 +227,12 @@ and any changes to logging or permissions.
 ## Testing and limitations
 
 Unit tests cover all three supported BTHome device IDs, model-name
-classification, four-button and one-button packet shapes, event ordering,
-encryption, truncation, and current and legacy hold values. CI builds the debug
-APK and runs unit tests and Android lint. The release workflow repeats those
-checks before building, verifying, attesting, and publishing the signed APK.
+classification, four-button and one-button packet shapes, independent remote
+slots and event fingerprints, legacy single-remote migration,
+address-to-profile routing, event ordering, encryption, truncation, and current
+and legacy hold values. CI builds the debug APK and runs unit tests and Android
+lint. The release workflow repeats those checks before building, verifying,
+attesting, and publishing the signed APK.
 
 BLE delivery, battery policy, dialer behavior, speakerphone handling, and
 background process limits vary across Android implementations. Always perform
