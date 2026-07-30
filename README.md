@@ -111,14 +111,14 @@ the APK and its adjacent `.sha256` file, then verify the download before
 installing it:
 
 ```bash
-sha256sum --check SaraButton-2.3.0.apk.sha256
+sha256sum --check SaraButton-2.4.0.apk.sha256
 ```
 
-On macOS, use `shasum -a 256 SaraButton-2.3.0.apk` and compare the result with
+On macOS, use `shasum -a 256 SaraButton-2.4.0.apk` and compare the result with
 the checksum file. Build provenance can also be verified with GitHub CLI:
 
 ```bash
-gh attestation verify SaraButton-2.3.0.apk --repo OferTiber/SaraButton
+gh attestation verify SaraButton-2.4.0.apk --repo OferTiber/SaraButton
 ```
 
 Android may ask the user to allow the browser or file manager to install
@@ -154,7 +154,7 @@ the temporary branch automatically after its pull request is merged.
 
 For each new version, increment both `versionCode` and `versionName` in
 `app/build.gradle`, merge the change to `main`, and push a semantic version tag
-such as `v2.3.0`. The tag version must match `versionName`. GitHub Actions then
+such as `v2.4.0`. The tag version must match `versionName`. GitHub Actions then
 tests and lints the project, builds and verifies the signed APK, generates its
 checksum and provenance attestation, and attaches both distributable files to
 the GitHub Release.
@@ -162,7 +162,7 @@ the GitHub Release.
 To retry publication for an existing tag without moving it, run:
 
 ```bash
-gh workflow run release.yml --repo OferTiber/SaraButton --ref main -f tag=v2.3.0
+gh workflow run release.yml --repo OferTiber/SaraButton --ref main -f tag=v2.4.0
 ```
 
 The retry uses the current workflow definition from `main` but checks out and
