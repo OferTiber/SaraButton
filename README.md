@@ -101,7 +101,10 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 The debug APK uses Android's standard local debug key. Distributable builds
 should use a private release signing key that is never committed to the
-repository.
+repository. Because those signatures differ, a debug APK cannot update an
+installation from GitHub Releases. Uninstalling the release build first also
+removes its app data; developers who need both builds should give the debug
+build a different application ID.
 
 ## Download a release APK
 
@@ -190,6 +193,10 @@ builds the specified tag.
    speakerphone request as expected.
 8. Reboot and test again. On Android 7.0 and newer, also test before the first
    unlock to verify Direct Boot behavior on the target device.
+
+When v2.4.0 first opens settings created by a single-remote version, it moves
+the selected remote and its phone assignments into the matching panel or Tough
+slot. The other slot remains empty until that remote is discovered.
 
 Do not force-stop the app: Android intentionally suppresses its receivers until
 the user opens it again. Keep Bluetooth enabled and configure a default voice
