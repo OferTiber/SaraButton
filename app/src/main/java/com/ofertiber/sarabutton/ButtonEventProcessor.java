@@ -26,8 +26,7 @@ final class ButtonEventProcessor {
             ScanResult result
     ) {
         Context localizedContext = AppLanguage.wrap(context);
-        String selectedAddress = preferences.getString(AppPreferences.KEY_REMOTE_ADDRESS, "");
-        if (selectedAddress == null || selectedAddress.isEmpty() || result == null) {
+        if (result == null) {
             return;
         }
 
@@ -41,7 +40,11 @@ final class ButtonEventProcessor {
                     .apply();
             return;
         }
-        if (!selectedAddress.equalsIgnoreCase(resultAddress)) {
+        int remoteButtonCount = AppPreferences.getRemoteButtonCountForAddress(
+                preferences,
+                resultAddress
+        );
+        if (remoteButtonCount == ShellyButtonDevice.BUTTON_COUNT_UNKNOWN) {
             return;
         }
 
@@ -54,7 +57,12 @@ final class ButtonEventProcessor {
         if (packet.isEncrypted()) {
             preferences.edit()
                     .putString(AppPreferences.KEY_STATUS,
-                            localizedContext.getString(R.string.encrypted_panel_status))
+                            localizedContext.getString(
+                                    remoteButtonCount
+                                            == ShellyButtonDevice.BUTTON_COUNT_TOUGH_1
+                                            ? R.string.encrypted_tough_status
+                                            : R.string.encrypted_panel_status
+                            ))
                     .apply();
             return;
         }
@@ -68,7 +76,9 @@ final class ButtonEventProcessor {
         );
 
         for (BthomeParser.ButtonEvent event : packet.getButtonEvents()) {
-            if (!event.isActive()) {
+            if (!event.isActive()
+                    || event.getButtonIndex() < 1
+                    || event.getButtonIndex() > remoteButtonCount) {
                 continue;
             }
             long activityAt = System.currentTimeMillis();
@@ -94,14 +104,19 @@ final class ButtonEventProcessor {
                     .putLong(AppPreferences.KEY_LAST_ACTIVITY_AT, activityAt)
                     .putInt(AppPreferences.KEY_LAST_ACTIVITY_BUTTON, event.getButtonIndex())
                     .putInt(AppPreferences.KEY_LAST_ACTIVITY_EVENT, event.getEventType())
+                    .putInt(
+                            AppPreferences.KEY_LAST_ACTIVITY_REMOTE_BUTTON_COUNT,
+                            remoteButtonCount
+                    )
                     .apply();
 
             if (event.getEventType() != triggerEvent) {
                 continue;
             }
 
-            String assignedPhone = AppPreferences.getButtonPhone(
+            String assignedPhone = AppPreferences.getPhoneForRemote(
                     preferences,
+                    remoteButtonCount,
                     event.getButtonIndex()
             );
             if (assignedPhone.isEmpty()) {
@@ -111,6 +126,7 @@ final class ButtonEventProcessor {
             String fingerprint = resultAddress.toUpperCase(Locale.ROOT)
                     + ":" + Arrays.hashCode(serviceData);
             String fingerprintKey = AppPreferences.lastEventFingerprintKey(
+                    remoteButtonCount,
                     event.getButtonIndex()
             );
             String lastFingerprint = preferences.getString(
@@ -135,7 +151,9 @@ final class ButtonEventProcessor {
                     0L
             );
             if (now < callGuardUntil) {
-                Log.i(LOG_TAG, "Ignored repeated Button " + event.getButtonIndex()
+                Log.i(LOG_TAG, "Ignored repeated "
+                        + remoteDescription(remoteButtonCount)
+                        + " Button " + event.getButtonIndex()
                         + " press while a call is pending or active");
                 continue;
             }
@@ -154,10 +172,17 @@ final class ButtonEventProcessor {
                         assignedPhone,
                         false
                 );
-                Log.i(LOG_TAG, "Button " + buttonIndex + " "
+                Log.i(LOG_TAG, remoteDescription(remoteButtonCount)
+                        + " Button " + buttonIndex + " "
                         + BthomeParser.eventName(eventType)
                         + "; callStarted=" + call.callStarted);
             });
         }
+    }
+
+    private static String remoteDescription(int remoteButtonCount) {
+        return remoteButtonCount == ShellyButtonDevice.BUTTON_COUNT_TOUGH_1
+                ? "Tough"
+                : "panel";
     }
 }

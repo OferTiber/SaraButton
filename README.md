@@ -20,11 +20,11 @@ manufacturer, mobile carrier, or contact.
 The app reads unencrypted BTHome v2 advertisements directly. A Shelly gateway,
 Bluetooth pairing, Shelly account, and Shelly Smart Control are not required.
 
-Sara Button monitors one selected remote per phone. Multiple supported remotes
-can be present in the same home, but the app ignores advertisements from every
-remote except the selected Bluetooth address. Discovering a different remote
-replaces the current selection; simultaneous multi-remote monitoring is not
-supported.
+Sara Button can monitor one four-button panel and one Tough 1 ZB simultaneously
+on the same phone. Each remote type has its own saved Bluetooth address and
+phone-number assignments. Advertisements from other Bluetooth addresses are
+ignored. The app supports one remote in each slot; it does not monitor two
+four-button panels or two Tough buttons at the same time.
 
 ## Android compatibility
 
@@ -59,7 +59,9 @@ battery use in their device settings.
 
 ## Features
 
-- One or four phone-number assignments based on the selected remote.
+- Four phone-number assignments for the panel plus a separate Tough 1 ZB
+  assignment.
+- Simultaneous monitoring of one four-button panel and one Tough 1 ZB.
 - Optional routing of all four-button remote buttons to the first number.
 - Single, double, or long press as the configured trigger type.
 - Packet-level duplicate suppression and a 20-second call safety guard.
@@ -109,14 +111,14 @@ the APK and its adjacent `.sha256` file, then verify the download before
 installing it:
 
 ```bash
-sha256sum --check SaraButton-2.3.0.apk.sha256
+sha256sum --check SaraButton-2.4.0.apk.sha256
 ```
 
-On macOS, use `shasum -a 256 SaraButton-2.3.0.apk` and compare the result with
+On macOS, use `shasum -a 256 SaraButton-2.4.0.apk` and compare the result with
 the checksum file. Build provenance can also be verified with GitHub CLI:
 
 ```bash
-gh attestation verify SaraButton-2.3.0.apk --repo OferTiber/SaraButton
+gh attestation verify SaraButton-2.4.0.apk --repo OferTiber/SaraButton
 ```
 
 Android may ask the user to allow the browser or file manager to install
@@ -152,7 +154,7 @@ the temporary branch automatically after its pull request is merged.
 
 For each new version, increment both `versionCode` and `versionName` in
 `app/build.gradle`, merge the change to `main`, and push a semantic version tag
-such as `v2.3.0`. The tag version must match `versionName`. GitHub Actions then
+such as `v2.4.0`. The tag version must match `versionName`. GitHub Actions then
 tests and lints the project, builds and verifies the signed APK, generates its
 checksum and provenance attestation, and attaches both distributable files to
 the GitHub Release.
@@ -160,7 +162,7 @@ the GitHub Release.
 To retry publication for an existing tag without moving it, run:
 
 ```bash
-gh workflow run release.yml --repo OferTiber/SaraButton --ref main -f tag=v2.3.0
+gh workflow run release.yml --repo OferTiber/SaraButton --ref main -f tag=v2.4.0
 ```
 
 The retry uses the current workflow definition from `main` but checks out and
@@ -176,10 +178,11 @@ builds the specified tag.
 3. Allow unrestricted background activity and disable the platform's unused-app
    suspension for Sara Button.
 4. Enter at least one phone number, including the international country code
-   where possible. On a four-button remote, blank assignments disable those
-   buttons. Tough 1 ZB uses only the Button 1 number.
-5. With the remote near the Android device, press a button once. Discovery
-   starts automatically when no remote is configured.
+   where possible. The panel has four assignments and Tough 1 ZB has a separate
+   assignment. Blank assignments disable those buttons.
+5. With each remote near the Android device, press a button once. Discovery
+   starts automatically for either missing remote type. You can configure just
+   one remote or add one panel and one Tough button for simultaneous monitoring.
 6. Choose the press type and start monitoring. Keep the ongoing monitoring
    notification enabled.
 7. Lock the screen and test every configured button. Confirm that the intended
@@ -208,7 +211,7 @@ Button afterward; discovery starts automatically.
 ## Privacy and security
 
 - The manifest does not request Internet access.
-- Phone numbers, the selected remote address, and settings are stored only in
+- Phone numbers, the selected remote addresses, and settings are stored only in
   app-private device-protected preferences so monitoring can work during Direct
   Boot.
 - Android backup and device-transfer extraction are disabled for app data.
@@ -224,10 +227,12 @@ and any changes to logging or permissions.
 ## Testing and limitations
 
 Unit tests cover all three supported BTHome device IDs, model-name
-classification, four-button and one-button packet shapes, event ordering,
-encryption, truncation, and current and legacy hold values. CI builds the debug
-APK and runs unit tests and Android lint. The release workflow repeats those
-checks before building, verifying, attesting, and publishing the signed APK.
+classification, four-button and one-button packet shapes, independent remote
+slots and event fingerprints, legacy single-remote migration,
+address-to-profile routing, event ordering, encryption, truncation, and current
+and legacy hold values. CI builds the debug APK and runs unit tests and Android
+lint. The release workflow repeats those checks before building, verifying,
+attesting, and publishing the signed APK.
 
 BLE delivery, battery policy, dialer behavior, speakerphone handling, and
 background process limits vary across Android implementations. Always perform

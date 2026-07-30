@@ -81,8 +81,10 @@ public final class MainActivity extends Activity {
     }
 
     private final EditText[] phoneFields = new EditText[4];
+    private EditText toughPhoneField;
     private TextView statusText;
     private TextView remoteText;
+    private TextView toughRemoteText;
     private TextView findHelpText;
     private TextView lastActivityText;
     private Spinner languageSpinner;
@@ -143,8 +145,10 @@ public final class MainActivity extends Activity {
         phoneFields[1] = findViewById(R.id.button2PhoneField);
         phoneFields[2] = findViewById(R.id.button3PhoneField);
         phoneFields[3] = findViewById(R.id.button4PhoneField);
+        toughPhoneField = findViewById(R.id.toughPhoneField);
         statusText = findViewById(R.id.statusText);
         remoteText = findViewById(R.id.remoteText);
+        toughRemoteText = findViewById(R.id.toughRemoteText);
         findHelpText = findViewById(R.id.findHelpText);
         lastActivityText = findViewById(R.id.lastActivityText);
         languageSpinner = findViewById(R.id.languageSpinner);
@@ -337,9 +341,10 @@ public final class MainActivity extends Activity {
         SharedPreferences preferences = AppPreferences.get(this);
         for (int index = 0; index < phoneFields.length; index++) {
             phoneFields[index].setText(
-                    AppPreferences.getIndividuallyAssignedPhone(preferences, index + 1)
+                    AppPreferences.getIndividuallyAssignedPanelPhone(preferences, index + 1)
             );
         }
+        toughPhoneField.setText(AppPreferences.getToughPhone(preferences));
         boolean useFirstForAll = preferences.getBoolean(
                 AppPreferences.KEY_USE_FIRST_FOR_ALL,
                 false
@@ -376,11 +381,27 @@ public final class MainActivity extends Activity {
                 @Override
                 public void afterTextChanged(Editable text) {
                     if (!loadingConfiguration) {
-                        persistPhone(buttonIndex, text.toString());
+                        persistPanelPhone(buttonIndex, text.toString());
                     }
                 }
             });
         }
+        toughPhoneField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence text, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable text) {
+                if (!loadingConfiguration) {
+                    persistToughPhone(text.toString());
+                }
+            }
+        });
 
         useFirstForAllCheckBox.setOnCheckedChangeListener((button, checked) -> {
             updateAdditionalPhoneVisibility(checked);
@@ -409,33 +430,30 @@ public final class MainActivity extends Activity {
         });
     }
 
-    private void persistPhone(int buttonIndex, String value) {
+    private void persistPanelPhone(int buttonIndex, String value) {
         String phone = value == null ? "" : value.trim();
-        SharedPreferences.Editor editor = AppPreferences.get(this).edit()
-                .putString(AppPreferences.buttonPhoneKey(buttonIndex), phone);
-        if (buttonIndex == 1) {
-            editor.putString(AppPreferences.KEY_PHONE, phone);
-        }
-        editor.apply();
+        AppPreferences.get(this).edit()
+                .putString(AppPreferences.panelButtonPhoneKey(buttonIndex), phone)
+                .apply();
+    }
+
+    private void persistToughPhone(String value) {
+        String phone = value == null ? "" : value.trim();
+        AppPreferences.get(this).edit()
+                .putString(AppPreferences.KEY_TOUGH_PHONE, phone)
+                .apply();
     }
 
     private void updateAdditionalPhoneVisibility(boolean useFirstForAll) {
-        boolean singleButtonRemote = hasConfiguredRemote()
-                && AppPreferences.getRemoteButtonCount(AppPreferences.get(this))
-                == ShellyButtonDevice.BUTTON_COUNT_TOUGH_1;
-        useFirstForAllCheckBox.setVisibility(singleButtonRemote ? View.GONE : View.VISIBLE);
-        additionalPhoneFields.setVisibility(
-                singleButtonRemote || useFirstForAll ? View.GONE : View.VISIBLE
-        );
+        useFirstForAllCheckBox.setVisibility(View.VISIBLE);
+        additionalPhoneFields.setVisibility(useFirstForAll ? View.GONE : View.VISIBLE);
     }
 
     private void ensureAutomaticDiscovery() {
         if (!activityVisible || findingRemote) {
             return;
         }
-        String address = AppPreferences.get(this)
-                .getString(AppPreferences.KEY_REMOTE_ADDRESS, "");
-        if (address != null && !address.isEmpty()) {
+        if (AppPreferences.hasBothRemoteTypes(AppPreferences.get(this))) {
             return;
         }
         if (!BleScanManager.hasScanPermission(this)) {
@@ -503,7 +521,10 @@ public final class MainActivity extends Activity {
         encryptedAddressShown = null;
         discoveryAddresses.clear();
         findHelpText.setText(R.string.searching_remote_help);
-        showStatus(getString(R.string.searching_remote));
+        if (!AppPreferences.get(this)
+                .getBoolean(AppPreferences.KEY_MONITORING, false)) {
+            showStatus(getString(R.string.searching_remote));
+        }
         discoveryScanner.startScan(
                 Collections.emptyList(),
                 BleScanManager.settings(),
@@ -558,26 +579,53 @@ public final class MainActivity extends Activity {
             return;
         }
         if (remoteButtonCount == ShellyButtonDevice.BUTTON_COUNT_UNKNOWN) {
-            int deviceCount = discoveryAddresses.size();
-            showStatus(getResources().getQuantityString(
-                    R.plurals.scanning_count,
-                    deviceCount,
-                    deviceCount
-            ));
+            if (!AppPreferences.get(this)
+                    .getBoolean(AppPreferences.KEY_MONITORING, false)) {
+                int deviceCount = discoveryAddresses.size();
+                showStatus(getResources().getQuantityString(
+                        R.plurals.scanning_count,
+                        deviceCount,
+                        deviceCount
+                ));
+            }
             return;
         }
 
+        SharedPreferences preferences = AppPreferences.get(this);
+        if (AppPreferences.hasRemote(preferences, remoteButtonCount)) {
+            return;
+        }
         String name = advertisedName;
         if (name == null || name.trim().isEmpty()) {
-            name = getString(R.string.panel_default_name);
+            name = getString(remoteButtonCount == ShellyButtonDevice.BUTTON_COUNT_TOUGH_1
+                    ? R.string.tough_default_name
+                    : R.string.panel_default_name);
         }
-        AppPreferences.get(this).edit()
-                .putString(AppPreferences.KEY_REMOTE_ADDRESS, address)
-                .putString(AppPreferences.KEY_REMOTE_NAME, name)
-                .putInt(AppPreferences.KEY_REMOTE_BUTTON_COUNT, remoteButtonCount)
-                .putString(AppPreferences.KEY_STATUS, getString(R.string.panel_found))
+        boolean monitoring = preferences.getBoolean(AppPreferences.KEY_MONITORING, false);
+        preferences.edit()
+                .putString(AppPreferences.remoteAddressKey(remoteButtonCount), address)
+                .putString(AppPreferences.remoteNameKey(remoteButtonCount), name)
+                .putString(
+                        AppPreferences.KEY_STATUS,
+                        getString(monitoring
+                                ? R.string.monitoring_active_background
+                                : R.string.panel_found)
+                )
                 .apply();
-        stopDiscovery();
+        if (monitoring) {
+            try {
+                MonitoringService.refresh(this);
+            } catch (RuntimeException exception) {
+                Log.w(LOG_TAG, "Could not refresh monitoring after adding a remote", exception);
+                BleScanManager.stopPersistentScan(this);
+                BleScanManager.startPersistentScan(this);
+            }
+        }
+        if (AppPreferences.hasBothRemoteTypes(preferences)) {
+            stopDiscovery();
+        } else {
+            findHelpText.setText(R.string.searching_remote_help);
+        }
         updateAdditionalPhoneVisibility(useFirstForAllCheckBox.isChecked());
         refreshStatus();
         refreshOnboarding();
@@ -595,11 +643,9 @@ public final class MainActivity extends Activity {
         }
         findingRemote = false;
         if (findHelpText != null) {
-            String address = AppPreferences.get(this)
-                    .getString(AppPreferences.KEY_REMOTE_ADDRESS, "");
-            findHelpText.setText(address == null || address.isEmpty()
-                    ? R.string.find_remote_help
-                    : R.string.remote_found_help);
+            findHelpText.setText(AppPreferences.hasBothRemoteTypes(AppPreferences.get(this))
+                    ? R.string.remote_found_help
+                    : R.string.find_remote_help);
         }
     }
 
@@ -618,8 +664,7 @@ public final class MainActivity extends Activity {
             return;
         }
         SharedPreferences preferences = AppPreferences.get(this);
-        String address = preferences.getString(AppPreferences.KEY_REMOTE_ADDRESS, "");
-        if (address == null || address.isEmpty()) {
+        if (!AppPreferences.hasAnyRemote(preferences)) {
             showStatus(getString(R.string.missing_remote));
             return;
         }
@@ -643,48 +688,68 @@ public final class MainActivity extends Activity {
     }
 
     private boolean savePhones() {
-        SharedPreferences.Editor editor = AppPreferences.get(this).edit();
-        boolean anyAssigned = false;
-        int remoteButtonCount = hasConfiguredRemote()
-                ? AppPreferences.getRemoteButtonCount(AppPreferences.get(this))
-                : phoneFields.length;
-        int visibleFieldCount = remoteButtonCount == ShellyButtonDevice.BUTTON_COUNT_TOUGH_1
-                || useFirstForAllCheckBox.isChecked()
+        SharedPreferences preferences = AppPreferences.get(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        boolean panelAssigned = false;
+        int visibleFieldCount = useFirstForAllCheckBox.isChecked()
                 ? 1
                 : phoneFields.length;
         for (int index = 0; index < visibleFieldCount; index++) {
             EditText field = phoneFields[index];
-            String raw = field.getText().toString().trim();
-            if (raw.isEmpty()) {
-                editor.putString(AppPreferences.buttonPhoneKey(index + 1), "");
-                if (index == 0) {
-                    editor.putString(AppPreferences.KEY_PHONE, "");
-                }
-                continue;
-            }
-
-            String phone = PhoneNumberUtils.normalizeNumber(raw);
-            int digits = phone.replaceAll("[^0-9]", "").length();
-            if (digits < 5 || !PhoneNumberUtils.isGlobalPhoneNumber(phone)) {
-                field.setError(getString(R.string.invalid_phone));
-                field.requestFocus();
+            String phone = normalizedPhone(field);
+            if (phone == null) {
                 return false;
             }
-            field.setText(phone);
-            editor.putString(AppPreferences.buttonPhoneKey(index + 1), phone);
-            if (index == 0) {
-                // Retain the old value for downgrade compatibility.
-                editor.putString(AppPreferences.KEY_PHONE, phone);
+            if (!phone.equals(field.getText().toString())) {
+                field.setText(phone);
             }
-            anyAssigned = true;
+            editor.putString(AppPreferences.panelButtonPhoneKey(index + 1), phone);
+            panelAssigned |= !phone.isEmpty();
         }
-        if (!anyAssigned) {
-            phoneFields[0].setError(getString(R.string.missing_phone_assignment));
-            phoneFields[0].requestFocus();
+
+        String toughPhone = normalizedPhone(toughPhoneField);
+        if (toughPhone == null) {
+            return false;
+        }
+        if (!toughPhone.equals(toughPhoneField.getText().toString())) {
+            toughPhoneField.setText(toughPhone);
+        }
+        editor.putString(AppPreferences.KEY_TOUGH_PHONE, toughPhone);
+
+        boolean hasPanel = AppPreferences.hasRemote(
+                preferences,
+                ShellyButtonDevice.BUTTON_COUNT_RC_4
+        );
+        boolean hasTough = AppPreferences.hasRemote(
+                preferences,
+                ShellyButtonDevice.BUTTON_COUNT_TOUGH_1
+        );
+        boolean assignedToConfiguredRemote = !hasPanel && !hasTough
+                ? panelAssigned || !toughPhone.isEmpty()
+                : (hasPanel && panelAssigned) || (hasTough && !toughPhone.isEmpty());
+        if (!assignedToConfiguredRemote) {
+            EditText field = hasTough && !hasPanel ? toughPhoneField : phoneFields[0];
+            field.setError(getString(R.string.missing_phone_assignment));
+            field.requestFocus();
             return false;
         }
         editor.apply();
         return true;
+    }
+
+    private String normalizedPhone(EditText field) {
+        String raw = field.getText().toString().trim();
+        if (raw.isEmpty()) {
+            return "";
+        }
+        String phone = PhoneNumberUtils.normalizeNumber(raw);
+        int digits = phone.replaceAll("[^0-9]", "").length();
+        if (digits < 5 || !PhoneNumberUtils.isGlobalPhoneNumber(phone)) {
+            field.setError(getString(R.string.invalid_phone));
+            field.requestFocus();
+            return null;
+        }
+        return phone;
     }
 
     private void stopMonitoring() {
@@ -747,27 +812,50 @@ public final class MainActivity extends Activity {
 
     private boolean hasConfiguredPhone() {
         SharedPreferences preferences = AppPreferences.get(this);
-        int buttonCount = hasConfiguredRemote()
-                ? AppPreferences.getRemoteButtonCount(preferences)
-                : phoneFields.length;
-        for (int button = 1; button <= buttonCount; button++) {
-            String raw = AppPreferences.getButtonPhone(preferences, button);
-            if (raw == null || raw.trim().isEmpty()) {
-                continue;
+        boolean hasPanel = AppPreferences.hasRemote(
+                preferences,
+                ShellyButtonDevice.BUTTON_COUNT_RC_4
+        );
+        boolean hasTough = AppPreferences.hasRemote(
+                preferences,
+                ShellyButtonDevice.BUTTON_COUNT_TOUGH_1
+        );
+        if (hasTough && isValidPhone(AppPreferences.getToughPhone(preferences))) {
+            return true;
+        }
+        if (hasPanel || !hasTough) {
+            int buttonCount = preferences.getBoolean(
+                    AppPreferences.KEY_USE_FIRST_FOR_ALL,
+                    false
+            ) ? 1 : phoneFields.length;
+            for (int button = 1; button <= buttonCount; button++) {
+                if (isValidPhone(
+                        AppPreferences.getIndividuallyAssignedPanelPhone(
+                                preferences,
+                                button
+                        )
+                )) {
+                    return true;
+                }
             }
-            String phone = PhoneNumberUtils.normalizeNumber(raw);
-            int digits = phone.replaceAll("[^0-9]", "").length();
-            if (digits >= 5 && PhoneNumberUtils.isGlobalPhoneNumber(phone)) {
-                return true;
-            }
+        }
+        if (!hasPanel && !hasTough) {
+            return isValidPhone(AppPreferences.getToughPhone(preferences));
         }
         return false;
     }
 
+    private boolean isValidPhone(String raw) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return false;
+        }
+        String phone = PhoneNumberUtils.normalizeNumber(raw);
+        int digits = phone.replaceAll("[^0-9]", "").length();
+        return digits >= 5 && PhoneNumberUtils.isGlobalPhoneNumber(phone);
+    }
+
     private boolean hasConfiguredRemote() {
-        String address = AppPreferences.get(this)
-                .getString(AppPreferences.KEY_REMOTE_ADDRESS, "");
-        return address != null && !address.isEmpty();
+        return AppPreferences.hasAnyRemote(AppPreferences.get(this));
     }
 
     private OnboardingStep currentOnboardingStep() {
@@ -983,44 +1071,85 @@ public final class MainActivity extends Activity {
                 getColor(monitoring ? R.color.red : R.color.green)
         ));
 
-        String remoteAddress = preferences.getString(AppPreferences.KEY_REMOTE_ADDRESS, "");
-        String remoteName = preferences.getString(AppPreferences.KEY_REMOTE_NAME, "");
-        if (remoteAddress == null || remoteAddress.isEmpty()) {
-            remoteText.setText(R.string.remote_not_selected);
-        } else {
-            String displayName = remoteName == null || remoteName.isEmpty()
-                    ? getString(R.string.panel_default_name)
-                    : remoteName;
-            remoteText.setText(getString(R.string.remote_format, displayName, remoteAddress));
-        }
+        updateRemoteText(
+                remoteText,
+                preferences,
+                ShellyButtonDevice.BUTTON_COUNT_RC_4,
+                R.string.panel_default_name
+        );
+        updateRemoteText(
+                toughRemoteText,
+                preferences,
+                ShellyButtonDevice.BUTTON_COUNT_TOUGH_1,
+                R.string.tough_default_name
+        );
         if (findHelpText != null) {
             findHelpText.setText(findingRemote
                     ? R.string.searching_remote_help
-                    : (remoteAddress == null || remoteAddress.isEmpty()
-                    ? R.string.find_remote_help
-                    : R.string.remote_found_help));
+                    : (AppPreferences.hasBothRemoteTypes(preferences)
+                    ? R.string.remote_found_help
+                    : R.string.find_remote_help));
         }
 
         long lastActivityAt = preferences.getLong(AppPreferences.KEY_LAST_ACTIVITY_AT, 0L);
         int lastButton = preferences.getInt(AppPreferences.KEY_LAST_ACTIVITY_BUTTON, 0);
         int lastEvent = preferences.getInt(AppPreferences.KEY_LAST_ACTIVITY_EVENT, -1);
+        int lastRemoteButtonCount = preferences.getInt(
+                AppPreferences.KEY_LAST_ACTIVITY_REMOTE_BUTTON_COUNT,
+                ShellyButtonDevice.BUTTON_COUNT_UNKNOWN
+        );
         if (lastActivityAt > 0L && lastButton >= 1 && lastButton <= 4 && lastEvent >= 0) {
             String date = DateFormat.getDateTimeInstance(
                     DateFormat.SHORT,
                     DateFormat.MEDIUM
             ).format(new Date(lastActivityAt));
-            lastActivityText.setText(getString(
-                    R.string.last_activity_format,
-                    date,
-                    lastButton,
-                    eventName(lastEvent)
-            ));
+            if (lastRemoteButtonCount == ShellyButtonDevice.BUTTON_COUNT_RC_4
+                    || lastRemoteButtonCount == ShellyButtonDevice.BUTTON_COUNT_TOUGH_1) {
+                lastActivityText.setText(getString(
+                        R.string.last_activity_remote_format,
+                        date,
+                        getString(lastRemoteButtonCount
+                                == ShellyButtonDevice.BUTTON_COUNT_TOUGH_1
+                                ? R.string.tough_remote_label
+                                : R.string.panel_remote_label),
+                        lastButton,
+                        eventName(lastEvent)
+                ));
+            } else {
+                lastActivityText.setText(getString(
+                        R.string.last_activity_format,
+                        date,
+                        lastButton,
+                        eventName(lastEvent)
+                ));
+            }
         } else {
             String lastActivity = preferences.getString(AppPreferences.KEY_LAST_ACTIVITY, "");
             lastActivityText.setText(lastActivity == null || lastActivity.isEmpty()
                     ? getString(R.string.no_activity)
                     : localizeLegacyActivity(lastActivity));
         }
+    }
+
+    private void updateRemoteText(
+            TextView textView,
+            SharedPreferences preferences,
+            int remoteButtonCount,
+            int defaultNameResource
+    ) {
+        String remoteAddress = AppPreferences.getRemoteAddress(
+                preferences,
+                remoteButtonCount
+        );
+        String remoteName = AppPreferences.getRemoteName(preferences, remoteButtonCount);
+        if (remoteAddress.isEmpty()) {
+            textView.setText(R.string.remote_slot_not_selected);
+            return;
+        }
+        String displayName = remoteName.isEmpty()
+                ? getString(defaultNameResource)
+                : remoteName;
+        textView.setText(getString(R.string.remote_format, displayName, remoteAddress));
     }
 
     private String localizeLegacyStatus(String status) {

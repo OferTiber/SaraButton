@@ -39,6 +39,8 @@ public final class MonitoringService extends Service {
             "com.ofertiber.sarabutton.action.START_MONITORING";
     private static final String ACTION_STOP =
             "com.ofertiber.sarabutton.action.STOP_MONITORING";
+    private static final String ACTION_REFRESH =
+            "com.ofertiber.sarabutton.action.REFRESH_MONITORING";
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private BluetoothLeScanner scanner;
@@ -115,7 +117,15 @@ public final class MonitoringService extends Service {
     }
 
     static void start(Context context) {
-        Intent intent = new Intent(context, MonitoringService.class).setAction(ACTION_START);
+        startWithAction(context, ACTION_START);
+    }
+
+    static void refresh(Context context) {
+        startWithAction(context, ACTION_REFRESH);
+    }
+
+    private static void startWithAction(Context context, String action) {
+        Intent intent = new Intent(context, MonitoringService.class).setAction(action);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
         } else {
@@ -158,6 +168,10 @@ public final class MonitoringService extends Service {
         if (!preferences.getBoolean(AppPreferences.KEY_MONITORING, false)) {
             stopSelf();
             return START_NOT_STICKY;
+        }
+        if (intent != null && ACTION_REFRESH.equals(intent.getAction())) {
+            stopScanning();
+            BleScanManager.stopPersistentScan(this);
         }
 
         createNotificationChannel();
