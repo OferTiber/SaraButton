@@ -12,3 +12,7 @@ keystore.properties
 signing.properties
 captures/
 .DS_Store
+
+# Local AI assistant instructions; do not publish repository-specific guidance.
+/AGENTS.md
+/CLAUDE.md
