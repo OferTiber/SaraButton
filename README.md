@@ -64,7 +64,7 @@ battery use in their device settings.
 - Simultaneous monitoring of one four-button panel and one Tough 1 ZB.
 - Optional routing of all four-button remote buttons to the first number.
 - Single, double, or long press as the configured trigger type.
-- Packet-level duplicate suppression and a 20-second call safety guard.
+- Packet-level duplicate suppression and a 10-second call safety guard.
 - An audible and vibration confirmation before placing a call.
 - Automatic discovery and immediate local settings persistence.
 - Direct Boot support on Android 7.0 and newer.
@@ -114,14 +114,14 @@ the APK and its adjacent `.sha256` file, then verify the download before
 installing it:
 
 ```bash
-sha256sum --check SaraButton-2.4.0.apk.sha256
+sha256sum --check SaraButton-2.4.1.apk.sha256
 ```
 
-On macOS, use `shasum -a 256 SaraButton-2.4.0.apk` and compare the result with
+On macOS, use `shasum -a 256 SaraButton-2.4.1.apk` and compare the result with
 the checksum file. Build provenance can also be verified with GitHub CLI:
 
 ```bash
-gh attestation verify SaraButton-2.4.0.apk --repo OferTiber/SaraButton
+gh attestation verify SaraButton-2.4.1.apk --repo OferTiber/SaraButton
 ```
 
 Android may ask the user to allow the browser or file manager to install

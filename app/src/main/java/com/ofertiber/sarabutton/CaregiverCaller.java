@@ -12,7 +12,7 @@ import android.telephony.PhoneNumberUtils;
 final class CaregiverCaller {
     // Packet-level deduplication is handled before this method. This short guard
     // only protects against two genuinely different events arriving almost at once.
-    private static final long CALL_COOLDOWN_MILLIS = 20_000L;
+    private static final long CALL_COOLDOWN_MILLIS = 10_000L;
 
     private CaregiverCaller() {
     }
