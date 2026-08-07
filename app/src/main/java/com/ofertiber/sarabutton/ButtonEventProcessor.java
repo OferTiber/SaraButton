@@ -14,7 +14,7 @@ import java.util.Locale;
 
 final class ButtonEventProcessor {
     private static final String LOG_TAG = "SaraButton";
-    private static final long CALL_GUARD_MILLIS = 20_000L;
+    private static final long CALL_GUARD_MILLIS = 10_000L;
 
     private ButtonEventProcessor() {
     }
