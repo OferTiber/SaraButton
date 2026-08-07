@@ -7,7 +7,7 @@
         <item>@string/button_4</item>
     </string-array>
     <string-array name="press_types">
-        <item>@string/press_single</item>
+        <item>@string/press_any</item>
         <item>@string/press_double</item>
         <item>@string/press_long</item>
     </string-array>

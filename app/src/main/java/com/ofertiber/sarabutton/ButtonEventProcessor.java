@@ -110,7 +110,10 @@ final class ButtonEventProcessor {
                     )
                     .apply();
 
-            if (event.getEventType() != triggerEvent) {
+            if (!BthomeParser.matchesConfiguredTrigger(
+                    triggerEvent,
+                    event.getEventType()
+            )) {
                 continue;
             }
 

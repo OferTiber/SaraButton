@@ -60,6 +60,7 @@
     <string name="button_2">الزر 2</string>
     <string name="button_3">الزر 3</string>
     <string name="button_4">الزر 4</string>
+    <string name="press_any">أي ضغطة</string>
     <string name="press_single">ضغطة واحدة</string>
     <string name="press_double">ضغطة مزدوجة</string>
     <string name="press_triple">ضغطة ثلاثية</string>

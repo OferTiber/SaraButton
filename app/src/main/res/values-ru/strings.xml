@@ -60,6 +60,7 @@
     <string name="button_2">Кнопка 2</string>
     <string name="button_3">Кнопка 3</string>
     <string name="button_4">Кнопка 4</string>
+    <string name="press_any">Любое нажатие</string>
     <string name="press_single">Одиночное нажатие</string>
     <string name="press_double">Двойное нажатие</string>
     <string name="press_triple">Тройное нажатие</string>
