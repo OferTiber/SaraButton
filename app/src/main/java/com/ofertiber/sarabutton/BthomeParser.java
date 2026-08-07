@@ -156,6 +156,23 @@ public final class BthomeParser {
         }
     }
 
+    static boolean matchesConfiguredTrigger(int configuredEvent, int receivedEvent) {
+        if (configuredEvent != EVENT_SINGLE_PRESS) {
+            return configuredEvent == receivedEvent;
+        }
+        switch (receivedEvent) {
+            case EVENT_SINGLE_PRESS:
+            case EVENT_DOUBLE_PRESS:
+            case EVENT_TRIPLE_PRESS:
+            case EVENT_LONG_PRESS:
+            case EVENT_DOUBLE_LONG_PRESS:
+            case EVENT_TRIPLE_LONG_PRESS:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     private static boolean has(byte[] data, int offset, int count) {
         return offset >= 0 && count >= 0 && offset + count <= data.length;
     }

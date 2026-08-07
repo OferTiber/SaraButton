@@ -104,6 +104,62 @@ public class BthomeParserTest {
         assertEquals("החזקה", BthomeParser.eventName(BthomeParser.EVENT_LEGACY_HOLD));
     }
 
+    @Test
+    public void anyPressTriggerAcceptsRapidRepeatedAndLongGestures() {
+        assertTrue(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_SINGLE_PRESS,
+                BthomeParser.EVENT_SINGLE_PRESS
+        ));
+        assertTrue(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_SINGLE_PRESS,
+                BthomeParser.EVENT_DOUBLE_PRESS
+        ));
+        assertTrue(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_SINGLE_PRESS,
+                BthomeParser.EVENT_TRIPLE_PRESS
+        ));
+        assertTrue(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_SINGLE_PRESS,
+                BthomeParser.EVENT_LONG_PRESS
+        ));
+        assertTrue(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_SINGLE_PRESS,
+                BthomeParser.EVENT_DOUBLE_LONG_PRESS
+        ));
+        assertTrue(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_SINGLE_PRESS,
+                BthomeParser.EVENT_TRIPLE_LONG_PRESS
+        ));
+        assertFalse(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_SINGLE_PRESS,
+                BthomeParser.EVENT_NONE
+        ));
+        assertFalse(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_SINGLE_PRESS,
+                BthomeParser.EVENT_HOLD
+        ));
+    }
+
+    @Test
+    public void explicitTriggerStillRequiresItsExactGesture() {
+        assertTrue(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_DOUBLE_PRESS,
+                BthomeParser.EVENT_DOUBLE_PRESS
+        ));
+        assertFalse(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_DOUBLE_PRESS,
+                BthomeParser.EVENT_TRIPLE_PRESS
+        ));
+        assertTrue(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_LONG_PRESS,
+                BthomeParser.EVENT_LONG_PRESS
+        ));
+        assertFalse(BthomeParser.matchesConfiguredTrigger(
+                BthomeParser.EVENT_LONG_PRESS,
+                BthomeParser.EVENT_SINGLE_PRESS
+        ));
+    }
+
     private static byte[] bytes(int... values) {
         byte[] result = new byte[values.length];
         for (int index = 0; index < values.length; index++) {

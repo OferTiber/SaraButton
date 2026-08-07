@@ -60,6 +60,7 @@
     <string name="button_2">按钮 2</string>
     <string name="button_3">按钮 3</string>
     <string name="button_4">按钮 4</string>
+    <string name="press_any">任意按键操作</string>
     <string name="press_single">单击</string>
     <string name="press_double">双击</string>
     <string name="press_triple">三击</string>

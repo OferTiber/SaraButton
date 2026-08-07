@@ -60,6 +60,7 @@
     <string name="button_2">Botón 2</string>
     <string name="button_3">Botón 3</string>
     <string name="button_4">Botón 4</string>
+    <string name="press_any">Cualquier pulsación</string>
     <string name="press_single">Pulsación simple</string>
     <string name="press_double">Pulsación doble</string>
     <string name="press_triple">Pulsación triple</string>

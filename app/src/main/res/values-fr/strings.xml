@@ -60,6 +60,7 @@
     <string name="button_2">Bouton 2</string>
     <string name="button_3">Bouton 3</string>
     <string name="button_4">Bouton 4</string>
+    <string name="press_any">N’importe quelle pression</string>
     <string name="press_single">Pression simple</string>
     <string name="press_double">Double pression</string>
     <string name="press_triple">Triple pression</string>

@@ -60,6 +60,7 @@
     <string name="button_2">Button 2</string>
     <string name="button_3">Button 3</string>
     <string name="button_4">Button 4</string>
+    <string name="press_any">Any press</string>
     <string name="press_single">Single press</string>
     <string name="press_double">Double press</string>
     <string name="press_triple">Triple press</string>

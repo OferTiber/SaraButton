@@ -60,6 +60,7 @@
     <string name="button_2">बटन 2</string>
     <string name="button_3">बटन 3</string>
     <string name="button_4">बटन 4</string>
+    <string name="press_any">कोई भी दबाव</string>
     <string name="press_single">एक बार दबाना</string>
     <string name="press_double">दो बार दबाना</string>
     <string name="press_triple">तीन बार दबाना</string>
